@@ -7,6 +7,7 @@
 # libraries
 library(tidyverse)
 library(maps)
+library(ggimage)
 
 # read data
 museums <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-11-22/museums.csv')
@@ -27,7 +28,7 @@ maritime <- museums %>%
 
 # base map, from https://bookdown.org/yann_ryan/r-for-newspaper-data/mapping-with-r-geocode-and-map-the-british-librarys-newspaper-collection.html
 worldmap = map_data('world')
-ggplot() + 
+UKmap <- ggplot() + 
   geom_polygon(data = worldmap, 
                aes(x = long, y = lat, 
                    group = group), 
@@ -38,20 +39,12 @@ ggplot() +
               ylim = c(50, 59)) +
   theme_void()
 
+
 # add maritime data
-ggplot() + 
-  geom_polygon(data = worldmap, 
-               aes(x = long, y = lat, 
-                   group = group), 
-               fill = 'gray90', 
-               color = 'black') + 
-  coord_fixed(ratio = 1.3, 
-              xlim = c(-10,3), 
-              ylim = c(50, 59)) +
+UKmap +
   geom_point(data = maritime,
              aes(x = Longitude, y = Latitude, color = status),
              size = 3)  +
-  theme_void() +
   theme(legend.position = c(0.87, 0.75),
         legend.background = element_rect(fill = "white", color = "black")) +
   labs(title = "Maritime Museums in the United Kingdom",
@@ -59,5 +52,17 @@ ggplot() +
        color = "Able to visit?",
        caption = "Data from https://museweb.dcs.bbk.ac.uk/data | author: Corey Clatterbuck")
 
-# get cool icons on map instead
 
+# get cool icons on map instead, following https://www.littlemissdata.com/blog/iconmap
+maritime2 <-maritime %>% 
+  mutate(Image = case_when(status == "open" ~ "https://raw.githubusercontent.com/cclatterbuck/tidy-tuesday/master/images/sailingship_color.png",
+                           status == "closed" ~ "https://raw.githubusercontent.com/cclatterbuck/tidy-tuesday/master/images/sinkingship_color.png"))
+
+UKmap +
+  geom_image(data = maritime2, aes(x = Longitude, y = Latitude, image=Image), size = 0.06) + 
+  theme(legend.position = c(0.87, 0.75),
+        legend.background = element_rect(fill = "white", color = "black")) +
+  labs(title = "Maritime Museums in the United Kingdom",
+       subtitle = "Most open maritime museums are in rural, coastal areas of England",
+       color = "Able to visit?",
+       caption = "Data from https://museweb.dcs.bbk.ac.uk/data | author: Corey Clatterbuck")
