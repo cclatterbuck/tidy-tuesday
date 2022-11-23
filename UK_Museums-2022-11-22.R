@@ -36,7 +36,7 @@ UKmap <- ggplot() +
                color = 'black') + 
   coord_fixed(ratio = 1.3, 
               xlim = c(-10,3), 
-              ylim = c(50, 59)) +
+              ylim = c(49, 59)) +
   theme_void()
 
 
@@ -59,10 +59,10 @@ maritime2 <-maritime %>%
                            status == "closed" ~ "https://raw.githubusercontent.com/cclatterbuck/tidy-tuesday/master/images/sinkingship_color.png"))
 
 UKmap +
-  geom_image(data = maritime2, aes(x = Longitude, y = Latitude, image=Image), size = 0.06) + 
+  geom_image(data = maritime2, aes(x = Longitude, y = Latitude, image=Image), size = 0.1, asp = 1) + 
   theme(legend.position = c(0.87, 0.75),
         legend.background = element_rect(fill = "white", color = "black")) +
   labs(title = "Maritime Museums in the United Kingdom",
        subtitle = "Most open maritime museums are in rural, coastal areas of England",
-       color = "Able to visit?",
+       image = "Able to visit?",
        caption = "Data from https://museweb.dcs.bbk.ac.uk/data | author: Corey Clatterbuck")
